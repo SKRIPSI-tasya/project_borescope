@@ -53,9 +53,18 @@ export function BorescopeUpload() {
       })
 
       if (response.ok) {
-        // In a real app, we'd pass the result via state or query params
-        // For MVP, we just navigate to analysis page
-        router.push("/analysis")
+        const result = await response.json()
+        
+        // Pass result via query params
+        const params = new URLSearchParams({
+          status: result.status,
+          confidence: result.confidence.toString(),
+          imageUrl: result.imageUrl,
+          filename: result.filename,
+          timestamp: result.timestamp
+        })
+        
+        router.push(`/analysis?${params.toString()}`)
       }
     } catch (error) {
       console.error("Classification failed:", error)

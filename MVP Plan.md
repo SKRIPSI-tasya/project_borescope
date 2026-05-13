@@ -2,52 +2,54 @@
 **Studi Kasus: PLN Nusantara Power UP Arun**
 
 ## 1. Ringkasan Sistem
-Sistem ini bertujuan untuk mengotomatisasi klasifikasi kondisi ruang bakar mesin menggunakan deep learning (CNN ResNet-50) untuk membantu teknisi dalam proses pemeliharaan.
+Sistem ini bertujuan untuk mengotomatisasi klasifikasi kondisi ruang bakar mesin menggunakan deep learning (CNN ResNet-50) untuk membantu teknisi dalam proses pemeliharaan melalui platform web yang intuitif.
 
-## 2. Fitur Utama MVP
-| Fitur | Deskripsi |
-|-------|-----------|
-| **Autentikasi** | Sistem login aman untuk teknisi berwenang. |
-| **Unggah Data** | Upload file citra atau video borescope (.jpg, .png, .mp4). |
-| **Klasifikasi Otomatis** | Eksekusi model ResNet-50 di backend untuk analisis kondisi. |
-| **Visualisasi Hasil** | Menampilkan status "Bagus" / "Tidak Bagus" & *Confidence Score*. |
-| **Manajemen Laporan** | Simpan hasil ke database dan unduh laporan PDF. |
-| **Riwayat Inspeksi** | Daftar histori inspeksi yang pernah dilakukan sebelumnya. |
+## 2. Status Pengembangan (Milestones)
+
+### 🚩 Milestone 1: Arsitektur & UI Core (Selesai)
+Fokus pada pembangunan pondasi aplikasi dan antarmuka pengguna utama.
+- [x] Inisialisasi Project (Next.js 15, Tailwind CSS, Shadcn UI)
+- [x] Landing Page Premium dengan Branding PLN
+- [x] Dashboard Layout & Sidebar Navigasi
+- [x] Komponen Upload Borescope (UI/UX)
+- [x] Halaman Preview Hasil Analisis (Mockup)
+
+### 🚩 Milestone 2: Autentikasi & Manajemen Pengguna (Selesai)
+Implementasi sistem keamanan dan akses berdasarkan peran.
+- [x] Setup Database & Auth (Supabase)
+- [x] Halaman Login & Register (Premium Glassmorphism)
+- [x] Role-based Access Control (Admin vs Teknisi)
+- [x] Sidebar Dinamis (Manajemen User hanya untuk Admin)
+
+### 🚩 Milestone 3: Integrasi & Interaktivitas Analisis (Selesai)
+Fokus pada alur kerja analisis citra dan pengalaman pengguna saat proses klasifikasi.
+- [x] Integrasi Frontend dengan API Prediksi (Menghubungkan Upload ke Hasil)
+- [x] Tampilan Hasil Analisis Dinamis (Status Warna, Badge, & Progress Bar)
+- [x] Fitur Interaktif Preview Citra (Zoom & Detail Area)
+- [x] Penanganan State Loading (Skeleton Screens) & Error Handling
+- [x] Sinkronisasi Data Prediksi ke Database Supabase
+
+### 🚩 Milestone 4: Manajemen Data & Dashboard Pelaporan (Akan Datang)
+Fokus pada fitur arsip, ekspor data, dan visualisasi statistik.
+- [ ] Halaman Riwayat Inspeksi (Tabel Data dengan Server-side Pagination)
+- [ ] Fitur Filter & Search Riwayat (Berdasarkan Tanggal, Teknisi, & Status)
+- [ ] Modul Export Laporan PDF (Generate Otomatis Berita Acara Inspeksi)
+- [ ] Dashboard Statistik (Visualisasi Chart Tren Kondisi Ruang Bakar)
+- [ ] Manajemen Profil & Pengaturan Akun
 
 ## 3. Struktur Halaman Web (Sitemap)
-### **Halaman 1: Login Page**
-- **Fungsi:** Gerbang masuk utama.
-- **Komponen:** Form login (Username/Email & Password), Branding PLN Nusantara Power.
+- **Halaman 1: Login/Register** (Keamanan akses)
+- **Halaman 2: Dashboard** (Pusat aksi upload & ringkasan cepat)
+- **Halaman 3: Hasil Analisis** (Visualisasi detail output AI & aksi simpan)
+- **Halaman 4: Riwayat Inspeksi** (Arsip digital hasil pemeliharaan terdahulu)
+- **Halaman 5: User Management** (Pengaturan akun & peran teknisi - Admin Only)
 
-### **Halaman 2: Dashboard / Upload Page**
-- **Fungsi:** Workspace utama teknisi.
-- **Komponen:**
-  - Sidebar navigasi.aa
-  - Drag & Drop Upload Area untuk file borescope.
-  - Tombol "Jalankan Klasifikasi".
-  - Ringkasan statistik inspeksi terakhir.
-
-### **Halaman 3: Halaman Hasil Analisis**
-- **Fungsi:** Menampilkan output dari model AI.
-- **Komponen:**
-  - Preview citra/video yang diunggah.
-  - Indikator Status (Warna Hijau untuk Bagus, Merah untuk Tidak Bagus).
-  - Meteran Probabilitas (*Confidence Score*).
-  - Tombol "Simpan ke Riwayat" dan "Unduh Laporan PDF".
-
-### **Halaman 4: Halaman Riwayat Inspeksi**
-- **Fungsi:** Arsip digital hasil pemeliharaan.
-- **Komponen:**
-  - Tabel data (ID, Tanggal, Teknisi, Hasil, Confidence).
-  - Fitur Filter & Search berdasarkan tanggal atau status.
-  - Aksi "Lihat Detail" untuk membuka kembali hasil analisis lama.
-
-## 4. Stack Teknologi (Rekomendasi)
-- **Frontend:** Next.js (React), Tailwind CSS, Shadcn UI.
-- **Backend API:** FastAPI (Python) - *Paling optimal untuk integrasi model CNN*.
-- **AI Model:** CNN (ResNet-50) menggunakan PyTorch/TensorFlow.
-- **Database:** MySQL.
-- **Reporting:** `jspdf` atau `react-pdf` untuk generate laporan.
+## 4. Stack Teknologi Web
+- **Core:** Next.js (React), TypeScript.
+- **Styling:** Tailwind CSS, Shadcn UI.
+- **Backend Service:** Supabase (Auth, Database, Storage).
+- **Icons & UI:** Lucide React, Framer Motion (Animations).
+- **Reporting:** JSPDF / React-PDF.
 
 ---
-*Draft disusun oleh Antigravity AI - 2026*
+*Update Terakhir: 13 Mei 2026 oleh Antigravity AI*
