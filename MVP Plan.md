@@ -37,6 +37,14 @@ Fokus pada fitur arsip, ekspor data, dan visualisasi statistik.
 - [x] Dashboard Statistik (Visualisasi Chart Tren Kondisi Ruang Bakar)
 - [x] Manajemen Profil & Pengaturan Akun
 
+### 🚩 Milestone 5: Manajemen Pengguna & Optimasi UI (Selesai)
+Fokus pada kontrol akses admin dan penyempurnaan pengalaman pengguna.
+- [x] Halaman User Management (CRUD Akun Teknisi - Admin Only)
+- [x] Role-based Access Control (Membatasi akses fitur Admin/Teknisi)
+- [x] Optimasi Responsivitas UI (Penyesuaian tampilan Mobile & Tablet)
+- [x] Audit Keamanan (Pengecekan ulang RLS Supabase & Auth)
+- [x] Uji Coba Pengguna (Final bug fixing & feedback adjustment)
+
 ## 3. Struktur Halaman Web (Sitemap)
 - **Halaman 1: Login/Register** (Keamanan akses)
 - **Halaman 2: Dashboard** (Pusat aksi upload & ringkasan cepat)
