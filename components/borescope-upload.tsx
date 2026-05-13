@@ -64,7 +64,7 @@ export function BorescopeUpload() {
           timestamp: result.timestamp
         })
         
-        router.push(`/analysis?${params.toString()}`)
+        router.push(`/analysis/result?${params.toString()}`)
       }
     } catch (error) {
       console.error("Classification failed:", error)

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -31,6 +32,11 @@ export function NavDocuments({
 }) {
   const { isMobile } = useSidebar()
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -63,8 +69,8 @@ export function NavDocuments({
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-24 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
+                side={mounted && isMobile ? "bottom" : "right"}
+                align={mounted && isMobile ? "end" : "start"}
               >
                 <DropdownMenuItem>
                   <FolderIcon

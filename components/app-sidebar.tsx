@@ -37,7 +37,7 @@ const defaultData = {
     },
     {
       title: "Analisis Baru",
-      url: "/dashboard",
+      url: "/analysis",
       icon: (
         <CameraIcon />
       ),
@@ -71,7 +71,7 @@ const defaultData = {
   documents: [
     {
       name: "Laporan Terakhir",
-      url: "#",
+      url: "/reports",
       icon: (
         <FileChartColumnIcon />
       ),
