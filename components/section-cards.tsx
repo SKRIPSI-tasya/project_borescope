@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -9,91 +10,125 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { TrendingUpIcon, TrendingDownIcon } from "lucide-react"
+import { TrendingUpIcon, Loader2 } from "lucide-react"
+import { supabase } from "@/lib/supabase"
 
 export function SectionCards() {
+  const [stats, setStats] = useState({
+    total: 0,
+    bagus: 0,
+    tidakBagus: 0,
+    avgConfidence: 0
+  })
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const { data, error } = await supabase.from("inspections").select("status, confidence_score")
+        if (error) throw error
+
+        if (data) {
+          const total = data.length
+          const bagus = data.filter(i => i.status === "Bagus").length
+          const tidakBagus = total - bagus
+          const avgConfidence = total > 0 ? data.reduce((acc, curr) => acc + curr.confidence_score, 0) / total : 0
+
+          setStats({ total, bagus, tidakBagus, avgConfidence })
+        }
+      } catch (err) {
+        console.error("Stats fetch error:", err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchStats()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+        {[1, 2, 3, 4].map(i => (
+          <Card key={i} className="flex h-32 items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </Card>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Inspeksi</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            156
+            {stats.total}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <TrendingUpIcon />
-              +12.5%
+              Real-time
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Meningkat bulan ini{" "}
-            <TrendingUpIcon className="size-4" />
-          </div>
           <div className="text-muted-foreground">
-            Total inspeksi 6 bulan terakhir
+            Total seluruh data inspeksi
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Kondisi Bagus</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            124
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-green-600">
+            {stats.bagus}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="text-green-600">
-              79.4%
+              {stats.total > 0 ? ((stats.bagus / stats.total) * 100).toFixed(1) : 0}%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Mayoritas dalam kondisi aman
-          </div>
           <div className="text-muted-foreground">
-            Persentase kondisi normal
+            Jumlah kondisi aman terdeteksi
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Perlu Perhatian</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-destructive">
-            32
+            {stats.tidakBagus}
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="text-destructive">
-              20.6%
+              {stats.total > 0 ? ((stats.tidakBagus / stats.total) * 100).toFixed(1) : 0}%
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Membutuhkan tindak lanjut
-          </div>
           <div className="text-muted-foreground">Kondisi tidak bagus terdeteksi</div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Rata-rata Confidence</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-blue-600">
-            92.4%
+            {(stats.avgConfidence * 100).toFixed(1)}%
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              Optimal
+              Stable
             </Badge>
-          </CardAction>
+          </Action>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Akurasi model sangat stabil
-          </div>
-          <div className="text-muted-foreground">Tingkat kepercayaan rata-rata</div>
+          <div className="text-muted-foreground">Tingkat kepercayaan model</div>
         </CardFooter>
       </Card>
     </div>

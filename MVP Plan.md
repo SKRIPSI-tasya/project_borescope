@@ -29,13 +29,13 @@ Fokus pada alur kerja analisis citra dan pengalaman pengguna saat proses klasifi
 - [x] Penanganan State Loading (Skeleton Screens) & Error Handling
 - [x] Sinkronisasi Data Prediksi ke Database Supabase
 
-### 🚩 Milestone 4: Manajemen Data & Dashboard Pelaporan (Akan Datang)
+### 🚩 Milestone 4: Manajemen Data & Dashboard Pelaporan (Selesai)
 Fokus pada fitur arsip, ekspor data, dan visualisasi statistik.
-- [ ] Halaman Riwayat Inspeksi (Tabel Data dengan Server-side Pagination)
-- [ ] Fitur Filter & Search Riwayat (Berdasarkan Tanggal, Teknisi, & Status)
-- [ ] Modul Export Laporan PDF (Generate Otomatis Berita Acara Inspeksi)
-- [ ] Dashboard Statistik (Visualisasi Chart Tren Kondisi Ruang Bakar)
-- [ ] Manajemen Profil & Pengaturan Akun
+- [x] Halaman Riwayat Inspeksi (Tabel Data dengan Fetch Real-time)
+- [x] Fitur Filter & Search Riwayat (Berdasarkan ID & Teknisi)
+- [x] Modul Export Laporan PDF (Generate Otomatis Berita Acara Inspeksi)
+- [x] Dashboard Statistik (Visualisasi Chart Tren Kondisi Ruang Bakar)
+- [x] Manajemen Profil & Pengaturan Akun
 
 ## 3. Struktur Halaman Web (Sitemap)
 - **Halaman 1: Login/Register** (Keamanan akses)

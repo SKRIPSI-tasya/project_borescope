@@ -12,6 +12,8 @@ import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
+import { jsPDF } from "jspdf"
+import "jspdf-autotable"
 
 function AnalysisContent() {
   const searchParams = useSearchParams()
@@ -20,17 +22,22 @@ function AnalysisContent() {
   const [zoom, setZoom] = useState(1)
   const [isSaving, setIsSaving] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
+  const [userName, setUserName] = useState<string>("")
 
   const status = searchParams.get("status") || "Bagus"
   const confidence = parseFloat(searchParams.get("confidence") || "0")
-  const imageUrl = searchParams.get("imageUrl") || "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1000"
+  const imageUrl = searchParams.get("imageUrl") || ""
   const filename = searchParams.get("filename") || "Unknown File"
   const timestamp = searchParams.get("timestamp") ? new Date(searchParams.get("timestamp")!).toLocaleString() : new Date().toLocaleString()
 
   useEffect(() => {
     const getSession = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) setUserId(user.id)
+      if (user) {
+        setUserId(user.id)
+        const { data: profile } = await supabase.from("profiles").select("name").eq("id", user.id).single()
+        if (profile) setUserName(profile.name)
+      }
     }
     getSession()
   }, [])
@@ -60,6 +67,45 @@ function AnalysisContent() {
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const generatePDF = () => {
+    const doc = new jsPDF()
+    
+    // Header
+    doc.setFontSize(20)
+    doc.text("Berita Acara Inspeksi Borescope", 105, 20, { align: "center" })
+    doc.setFontSize(12)
+    doc.text("PLN Nusantara Power UP Arun", 105, 28, { align: "center" })
+    doc.line(20, 32, 190, 32)
+
+    // Information Table
+    const tableData = [
+      ["Item", "Informasi"],
+      ["Filename", filename],
+      ["Waktu Inspeksi", timestamp],
+      ["Teknisi", userName || "N/A"],
+      ["Status Kondisi", status.toUpperCase()],
+      ["Confidence Score", `${(confidence * 100).toFixed(2)}%`]
+    ]
+
+    // @ts-ignore
+    doc.autoTable({
+      head: [tableData[0]],
+      body: tableData.slice(1),
+      startY: 40,
+      theme: "grid",
+      headStyles: { fillStyle: [37, 99, 235] }
+    })
+
+    // Footer
+    const finalY = (doc as any).lastAutoTable.finalY || 40
+    doc.setFontSize(10)
+    doc.text("Dokumen ini dihasilkan secara otomatis oleh Sistem Klasifikasi Borescope AI.", 20, finalY + 20)
+    doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 20, finalY + 26)
+
+    doc.save(`Laporan_Borescope_${filename.split('.')[0]}.pdf`)
+    toast.success("Laporan PDF berhasil diunduh")
   }
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.2, 3))
@@ -94,7 +140,7 @@ function AnalysisContent() {
             )}
             Simpan ke Riwayat
           </Button>
-          <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+          <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={generatePDF}>
             <Download className="h-4 w-4" />
             Unduh Laporan
           </Button>
@@ -128,11 +174,18 @@ function AnalysisContent() {
                 className="transition-transform duration-200 ease-out"
                 style={{ transform: `scale(${zoom})` }}
               >
-                <img 
-                  src={imageUrl} 
-                  alt="Borescope Preview" 
-                  className="h-full w-full object-contain"
-                />
+                {imageUrl ? (
+                  <img 
+                    src={imageUrl} 
+                    alt="Borescope Preview" 
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <AlertTriangle className="h-10 w-10" />
+                    <p>Gambar tidak tersedia</p>
+                  </div>
+                )}
               </div>
               
               {/* Zoom Controls */}
