@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
-import { Loader2, CommandIcon } from "lucide-react"
+import { Loader2, CommandIcon, ChevronRight } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -42,6 +42,13 @@ export default function LoginPage() {
 
   return (
     <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <Link
+        href="/"
+        className="absolute right-4 top-4 z-30 flex items-center gap-1 text-sm font-medium text-zinc-400 hover:text-white lg:right-8 lg:top-8"
+      >
+        Kembali
+        <ChevronRight className="h-4 w-4" />
+      </Link>
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
         <div 
           className="absolute inset-0 bg-zinc-900 bg-cover bg-center" 
