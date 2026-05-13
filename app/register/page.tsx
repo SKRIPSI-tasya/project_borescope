@@ -58,7 +58,7 @@ export default function RegisterPage() {
     <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       <Link
         href="/"
-        className="absolute right-4 top-4 z-30 flex items-center gap-1 text-sm font-medium text-zinc-400 hover:text-white lg:right-8 lg:top-8"
+        className="absolute right-4 top-4 z-30 flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground lg:right-8 lg:top-8"
       >
         Kembali
         <ChevronRight className="h-4 w-4" />
