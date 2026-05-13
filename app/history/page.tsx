@@ -15,7 +15,18 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, FileText, ExternalLink, Download, Loader2 } from "lucide-react"
+import { Search, FileText, ExternalLink, Download, Loader2, Trash2 } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
@@ -56,12 +67,51 @@ export default function HistoryPage() {
         .order("created_at", { ascending: false })
 
       if (error) throw error
-      setInspections(data || [])
+      
+      // Map data to handle the profiles array returning from Supabase
+      const formattedData = (data as any[]).map(item => ({
+        ...item,
+        profiles: Array.isArray(item.profiles) ? item.profiles[0] : item.profiles
+      }))
+
+      setInspections(formattedData)
     } catch (error) {
       console.error("Fetch history error:", error)
       toast.error("Gagal mengambil data riwayat")
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleDelete = async (id: string, imageUrl: string) => {
+    try {
+      // 1. Extract file path from URL
+      // URL format: .../storage/v1/object/public/borescope-images/uploads/filename.ext
+      const pathParts = imageUrl.split("borescope-images/")
+      if (pathParts.length > 1) {
+        const filePath = pathParts[1]
+        
+        // 2. Delete from Storage
+        const { error: storageError } = await supabase.storage
+          .from("borescope-images")
+          .remove([filePath])
+        
+        if (storageError) console.error("Storage delete error:", storageError)
+      }
+
+      // 3. Delete from Database
+      const { error: dbError } = await supabase
+        .from("inspections")
+        .delete()
+        .eq("id", id)
+
+      if (dbError) throw dbError
+
+      toast.success("Data inspeksi berhasil dihapus")
+      fetchHistory() // Refresh list
+    } catch (error: any) {
+      console.error("Delete error:", error)
+      toast.error(error.message || "Gagal menghapus data")
     }
   }
 
@@ -137,36 +187,76 @@ export default function HistoryPage() {
                 ) : (
                   filteredData.map((item) => (
                     <TableRow key={item.id} className="group hover:bg-muted/30 transition-colors">
-                      <TableCell className="font-mono text-xs">{item.id.split('-')[0]}...</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {new Date(item.created_at).toLocaleString()}
+                      <TableCell className="font-mono text-[10px]">{item.id.slice(0, 8)}...</TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {new Date(item.created_at).toLocaleString("id-ID")}
                       </TableCell>
-                      <TableCell>{item.profiles?.name || "N/A"}</TableCell>
+                      <TableCell className="font-medium">{item.profiles?.name || "N/A"}</TableCell>
                       <TableCell>
                         <Badge 
-                          variant={item.status === "Bagus" ? "default" : "destructive"}
-                          className={item.status === "Bagus" ? "bg-green-500 hover:bg-green-600" : ""}
+                          variant={item.status === "NORMAL" ? "default" : item.status === "ANOMALI" ? "destructive" : "secondary"}
+                          className={
+                            item.status === "NORMAL" ? "bg-green-500 hover:bg-green-600" : 
+                            item.status === "PROCESSING" ? "animate-pulse" : ""
+                          }
                         >
-                          {item.status}
+                          {item.status === "PROCESSING" ? "MEMPROSES" : item.status}
                         </Badge>
                       </TableCell>
-                      <TableCell>{(item.confidence_score * 100).toFixed(1)}%</TableCell>
+                      <TableCell className="text-sm">
+                        {item.status === "PROCESSING" ? "-" : `${(item.confidence_score * 100).toFixed(1)}%`}
+                      </TableCell>
                       <TableCell>
-                        <div className="h-10 w-16 rounded overflow-hidden border bg-muted">
-                          <img 
-                            src={item.image_url} 
-                            alt="Preview" 
-                            className="h-full w-full object-cover"
-                          />
+                        <div className="h-10 w-16 rounded-md overflow-hidden border bg-muted flex items-center justify-center">
+                          {item.image_url?.endsWith('.mp4') ? (
+                            <div className="flex items-center justify-center h-full w-full bg-blue-500/10">
+                              <FileText className="h-4 w-4 text-blue-600" />
+                            </div>
+                          ) : (
+                            <img 
+                              src={item.image_url} 
+                              alt="Preview" 
+                              className="h-full w-full object-cover"
+                            />
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/analysis?imageUrl=${item.image_url}&status=${item.status}&confidence=${item.confidence_score}&timestamp=${item.created_at}`}>
-                              <ExternalLink className="h-4 w-4" />
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={`/dashboard/inspections/${item.id}`} className="gap-2">
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              Detail
                             </Link>
                           </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="icon" 
+                                className="h-9 w-9 text-destructive hover:bg-destructive hover:text-white"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Hapus Data Inspeksi?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Data inspeksi dan file media terkait akan dihapus secara permanen.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Batal</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={() => handleDelete(item.id, item.image_url)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Hapus
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </TableCell>
                     </TableRow>

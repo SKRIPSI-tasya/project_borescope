@@ -85,22 +85,26 @@ export function RecentInspections() {
                 {inspections.map((item) => (
                   <TableRow key={item.id} className="group transition-colors hover:bg-muted/50">
                     <TableCell className="text-sm">
-                      {new Date(item.created_at).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(item.created_at).toLocaleDateString("id-ID", { day: '2-digit', month: 'short' })}, {new Date(item.created_at).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })}
                     </TableCell>
                     <TableCell>
                       <Badge 
-                        variant={item.status === "Bagus" ? "default" : "destructive"}
-                        className={item.status === "Bagus" ? "bg-green-500/10 text-green-600 hover:bg-green-500/20 border-green-200" : "bg-red-500/10 text-red-600 hover:bg-red-500/20 border-red-200"}
+                        variant={item.status === "NORMAL" ? "default" : item.status === "ANOMALI" ? "destructive" : "secondary"}
+                        className={
+                          item.status === "NORMAL" ? "bg-green-500/10 text-green-600 border-green-200" : 
+                          item.status === "ANOMALI" ? "bg-red-500/10 text-red-600 border-red-200" : 
+                          "bg-blue-500/10 text-blue-600 border-blue-200 animate-pulse"
+                        }
                       >
-                        {item.status}
+                        {item.status === "PROCESSING" ? "MEMPROSES..." : item.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm font-medium">
-                      {(item.confidence_score * 100).toFixed(1)}%
+                      {item.status === "PROCESSING" ? "-" : `${(item.confidence_score * 100).toFixed(1)}%`}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                        <Link href={`/analysis/result?imageUrl=${item.image_url}&status=${item.status}&confidence=${item.confidence_score}&timestamp=${item.created_at}`}>
+                        <Link href={`/dashboard/inspections/${item.id}`}>
                           <ExternalLink className="h-4 w-4" />
                         </Link>
                       </Button>
