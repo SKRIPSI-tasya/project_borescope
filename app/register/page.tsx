@@ -3,13 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { 
@@ -22,7 +15,7 @@ import {
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+import { Loader2, CommandIcon } from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -52,7 +45,7 @@ export default function RegisterPage() {
 
       if (error) throw error
 
-      toast.success("Registrasi berhasil! Silakan cek email Anda (jika konfirmasi aktif) atau login langsung.")
+      toast.success("Registrasi berhasil! Silakan login untuk masuk.")
       router.push("/login")
     } catch (error: any) {
       toast.error(error.message || "Terjadi kesalahan saat registrasi")
@@ -62,105 +55,115 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-500/10 blur-[120px]" />
+    <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
+        <div 
+          className="absolute inset-0 bg-zinc-900 bg-cover bg-center" 
+          style={{ backgroundImage: "url('/auth-bg.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-900/40 to-transparent" />
+        
+        <div className="relative z-20 flex items-center text-lg font-medium">
+          <CommandIcon className="mr-2 h-6 w-6" />
+          PLN Nusantara Power
+        </div>
+        
+        <div className="relative z-20 mt-auto">
+          <blockquote className="space-y-2">
+            <p className="text-lg">
+              "Bergabunglah dengan ekosistem digital kami untuk meningkatkan efisiensi pemeliharaan unit pembangkit melalui teknologi Computer Vision."
+            </p>
+            <footer className="text-sm text-zinc-400">Teknologi Pemeliharaan Terintegrasi</footer>
+          </blockquote>
+        </div>
       </div>
-
-      <Card className="w-full max-w-md border-slate-800 bg-slate-950/50 backdrop-blur-xl">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="rounded-2xl bg-linear-to-br from-blue-600 to-cyan-500 p-3 shadow-lg shadow-blue-500/20">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-6 w-6 text-white"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-              </svg>
-            </div>
+      
+      <div className="lg:p-8">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          <div className="flex flex-col space-y-2 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Daftar Akun Baru
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Lengkapi data di bawah ini untuk mendaftar
+            </p>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-white">
-            Daftar Akun Baru
-          </CardTitle>
-          <CardDescription className="text-slate-400">
-            Sistem Klasifikasi Ruang Bakar (Borescope)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleRegister} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name" className="text-slate-200">Nama Lengkap</Label>
-              <Input
-                id="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Masukkan nama lengkap"
-                className="border-slate-800 bg-slate-900/50 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email" className="text-slate-200">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="name@example.com"
-                className="border-slate-800 bg-slate-900/50 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password" className="text-slate-200">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="border-slate-800 bg-slate-900/50 text-white focus-visible:ring-blue-500"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="role" className="text-slate-200">Role</Label>
-              <Select 
-                value={formData.role} 
-                onValueChange={(value) => setFormData({ ...formData, role: value })}
-              >
-                <SelectTrigger className="border-slate-800 bg-slate-900/50 text-white">
-                  <SelectValue placeholder="Pilih Role" />
-                </SelectTrigger>
-                <SelectContent className="border-slate-800 bg-slate-950 text-white">
-                  <SelectItem value="TEKNISI">Teknisi</SelectItem>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button 
-              type="submit" 
-              disabled={loading}
-              className="w-full bg-linear-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white border-none shadow-lg shadow-blue-500/20 transition-all duration-300"
+          
+          <div className="grid gap-6">
+            <form onSubmit={handleRegister}>
+              <div className="grid gap-4">
+                <div className="grid gap-1">
+                  <Label htmlFor="name">Nama Lengkap</Label>
+                  <Input
+                    id="name"
+                    placeholder="Masukkan nama lengkap"
+                    disabled={loading}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    placeholder="nama@plnnp.co.id"
+                    type="email"
+                    autoCapitalize="none"
+                    disabled={loading}
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    placeholder="Buat password"
+                    type="password"
+                    disabled={loading}
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <Label htmlFor="role">Role</Label>
+                  <Select 
+                    value={formData.role} 
+                    onValueChange={(value) => setFormData({ ...formData, role: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="TEKNISI">Teknisi</SelectItem>
+                      <SelectItem value="ADMIN">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button disabled={loading}>
+                  {loading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Daftar
+                </Button>
+              </div>
+            </form>
+          </div>
+          
+          <p className="px-8 text-center text-sm text-muted-foreground">
+            Sudah punya akun?{" "}
+            <Link
+              href="/login"
+              className="underline underline-offset-4 hover:text-primary"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Daftar Sekarang"}
-            </Button>
-            <div className="text-center text-sm text-slate-400">
-              Sudah punya akun?{" "}
-              <Link href="/login" className="text-blue-400 hover:text-blue-300 underline underline-offset-4">
-                Masuk
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              Masuk
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

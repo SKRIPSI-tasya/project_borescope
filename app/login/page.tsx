@@ -3,19 +3,12 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+import { Loader2, CommandIcon } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -48,81 +41,101 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-500/10 blur-[120px]" />
+    <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
+        <div 
+          className="absolute inset-0 bg-zinc-900 bg-cover bg-center" 
+          style={{ backgroundImage: "url('/auth-bg.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-900/40 to-transparent" />
+        
+        <div className="relative z-20 flex items-center text-lg font-medium">
+          <CommandIcon className="mr-2 h-6 w-6" />
+          PLN Nusantara Power
+        </div>
+        
+        <div className="relative z-20 mt-auto">
+          <blockquote className="space-y-2">
+            <p className="text-lg">
+              "Sistem inspeksi borescope berbasis AI ini membantu kami mendeteksi anomali pada ruang bakar dengan tingkat akurasi dan efisiensi yang jauh lebih tinggi."
+            </p>
+            <footer className="text-sm text-zinc-400">Unit Pelaksana Arun</footer>
+          </blockquote>
+        </div>
       </div>
-
-      <Card className="w-full max-w-md border-slate-800 bg-slate-950/50 backdrop-blur-xl">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="rounded-2xl bg-linear-to-br from-blue-600 to-cyan-500 p-3 shadow-lg shadow-blue-500/20">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-6 w-6 text-white"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-              </svg>
-            </div>
+      
+      <div className="lg:p-8">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          <div className="flex flex-col space-y-2 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Masuk ke Sistem
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Masukkan email dan password Anda untuk masuk
+            </p>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-white">
-            PLN Nusantara Power
-          </CardTitle>
-          <CardDescription className="text-slate-400">
-            Sistem Klasifikasi Ruang Bakar (Borescope)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email" className="text-slate-200">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="name@example.com"
-                className="border-slate-800 bg-slate-900/50 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password" className="text-slate-200">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="border-slate-800 bg-slate-900/50 text-white focus-visible:ring-blue-500"
-              />
-            </div>
-            <Button 
-              type="submit" 
-              disabled={loading}
-              className="w-full bg-linear-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white border-none shadow-lg shadow-blue-500/20 transition-all duration-300"
+          
+          <div className="grid gap-6">
+            <form onSubmit={handleLogin}>
+              <div className="grid gap-4">
+                <div className="grid gap-1">
+                  <Label className="sr-only" htmlFor="email">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    placeholder="nama@plnnp.co.id"
+                    type="email"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect="off"
+                    disabled={loading}
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <Label className="sr-only" htmlFor="password">
+                    Password
+                  </Label>
+                  <Input
+                    id="password"
+                    placeholder="Password"
+                    type="password"
+                    autoCapitalize="none"
+                    autoComplete="current-password"
+                    disabled={loading}
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                  />
+                </div>
+                <Button disabled={loading}>
+                  {loading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Masuk
+                </Button>
+              </div>
+            </form>
+          </div>
+          
+          <p className="px-8 text-center text-sm text-muted-foreground">
+            Belum punya akun?{" "}
+            <Link
+              href="/register"
+              className="underline underline-offset-4 hover:text-primary"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Masuk ke Sistem"}
-            </Button>
-            <div className="text-center text-sm text-slate-400">
-              Belum punya akun?{" "}
-              <Link href="/register" className="text-blue-400 hover:text-blue-300 underline underline-offset-4">
-                Daftar
-              </Link>
-            </div>
-            <div className="mt-2 text-center text-xs text-slate-500">
-              Hanya untuk teknisi berwenang UP Arun.
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              Daftar Sekarang
+            </Link>
+          </p>
+          
+          <p className="px-8 text-center text-xs text-muted-foreground/60">
+            Hanya untuk personel berwenang UP Arun.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
