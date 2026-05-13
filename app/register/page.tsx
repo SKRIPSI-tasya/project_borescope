@@ -12,35 +12,50 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    role: "TEKNISI",
   })
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+            role: formData.role,
+          },
+        },
       })
 
       if (error) throw error
 
-      toast.success("Berhasil masuk!")
-      router.push("/dashboard")
+      toast.success("Registrasi berhasil! Silakan cek email Anda (jika konfirmasi aktif) atau login langsung.")
+      router.push("/login")
     } catch (error: any) {
-      toast.error(error.message || "Email atau password salah")
+      toast.error(error.message || "Terjadi kesalahan saat registrasi")
     } finally {
       setLoading(false)
     }
@@ -72,14 +87,26 @@ export default function LoginPage() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight text-white">
-            PLN Nusantara Power
+            Daftar Akun Baru
           </CardTitle>
           <CardDescription className="text-slate-400">
             Sistem Klasifikasi Ruang Bakar (Borescope)
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="grid gap-4">
+          <form onSubmit={handleRegister} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name" className="text-slate-200">Nama Lengkap</Label>
+              <Input
+                id="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Masukkan nama lengkap"
+                className="border-slate-800 bg-slate-900/50 text-white placeholder:text-slate-500 focus-visible:ring-blue-500"
+              />
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="email" className="text-slate-200">Email</Label>
               <Input
@@ -103,21 +130,33 @@ export default function LoginPage() {
                 className="border-slate-800 bg-slate-900/50 text-white focus-visible:ring-blue-500"
               />
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="role" className="text-slate-200">Role</Label>
+              <Select 
+                value={formData.role} 
+                onValueChange={(value) => setFormData({ ...formData, role: value })}
+              >
+                <SelectTrigger className="border-slate-800 bg-slate-900/50 text-white">
+                  <SelectValue placeholder="Pilih Role" />
+                </SelectTrigger>
+                <SelectContent className="border-slate-800 bg-slate-950 text-white">
+                  <SelectItem value="TEKNISI">Teknisi</SelectItem>
+                  <SelectItem value="ADMIN">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Button 
               type="submit" 
               disabled={loading}
               className="w-full bg-linear-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white border-none shadow-lg shadow-blue-500/20 transition-all duration-300"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Masuk ke Sistem"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Daftar Sekarang"}
             </Button>
             <div className="text-center text-sm text-slate-400">
-              Belum punya akun?{" "}
-              <Link href="/register" className="text-blue-400 hover:text-blue-300 underline underline-offset-4">
-                Daftar
+              Sudah punya akun?{" "}
+              <Link href="/login" className="text-blue-400 hover:text-blue-300 underline underline-offset-4">
+                Masuk
               </Link>
-            </div>
-            <div className="mt-2 text-center text-xs text-slate-500">
-              Hanya untuk teknisi berwenang UP Arun.
             </div>
           </form>
         </CardContent>

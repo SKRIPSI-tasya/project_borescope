@@ -22,6 +22,10 @@ import {
 } from "@/components/ui/sidebar"
 import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
 
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
+import { toast } from "sonner"
+
 export function NavUser({
   user,
 }: {
@@ -32,6 +36,18 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+      toast.success("Berhasil keluar")
+      router.push("/login")
+    } catch (error: any) {
+      toast.error(error.message || "Gagal keluar")
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -94,7 +110,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOutIcon
               />
               Log out
